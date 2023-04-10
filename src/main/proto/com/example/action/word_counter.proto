@@ -1,0 +1,22 @@
+syntax = "proto3";
+package com.example.action;
+
+import "kalix/annotations.proto";
+
+option java_outer_classname = "WordCounterApi";
+
+message Text {
+  string message = 1;
+}
+
+message Result {
+  int32 count = 1;
+}
+
+service WordCounter {
+  option (kalix.codegen) = {
+    action: {}
+  };
+
+  rpc CountWords(Text) returns (Result) {}
+}

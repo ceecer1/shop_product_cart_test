@@ -1,0 +1,56 @@
+syntax = "proto3";
+
+package com.example.api;
+
+import "com/example/domain/product_domain.proto";
+import "kalix/annotations.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+message CreateProductRequest {
+  string id = 1 [(kalix.field).entity_key = true];
+  string name = 2;
+  string supplier = 3;
+}
+
+message GetProductRequest {
+  string id = 1 [(kalix.field).entity_key = true];
+}
+
+message ExpireProduct {
+  string id = 1 [(kalix.field).entity_key = true];
+}
+
+service ProductEntityApi {
+  option (kalix.codegen) = {
+    event_sourced_entity: {
+      name: "com.example.domain.ProductStateEntity"
+      entity_type: "products"
+      state: "com.example.domain.ProductState"
+      events: [
+        "com.example.domain.ProductCreated",
+        "com.example.domain.ProductExpired"
+      ]
+    }
+  };
+
+  rpc Expire (ExpireProduct) returns (domain.ProductState) {
+    option (google.api.http) = {
+      get: "/products/expire/{id}"
+    };
+  }
+
+  rpc Create (CreateProductRequest) returns (google.protobuf.Empty) {
+//    option (kalix.method).entity.key_generator = VERSION_4_UUID;
+    option (google.api.http) = {
+      post: "/products/create"
+      body: "*"
+    };
+  }
+
+  rpc Get (GetProductRequest) returns (domain.ProductState) {
+    option (google.api.http) = {
+      get: "/products/get/{id}"
+    };
+  }
+}

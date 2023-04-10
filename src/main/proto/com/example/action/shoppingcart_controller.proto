@@ -1,0 +1,16 @@
+syntax = "proto3";
+package com.example.action;
+
+import "kalix/annotations.proto";
+import "google/protobuf/empty.proto";
+import "com/example/api/shoppingcart_api.proto";
+
+option java_outer_classname = "ShoppingCartControllerApi";
+
+service ShoppingCartController {
+  option (kalix.codegen) = {
+    action: {}
+  };
+
+  rpc VerifyAddItem(api.AddLineItem) returns (google.protobuf.Empty) {}
+}

@@ -1,0 +1,41 @@
+syntax = "proto3";
+package com.example.action;
+
+import "com/example/domain/product_domain.proto";
+import "kalix/annotations.proto";
+import "google/api/annotations.proto";
+import "google/protobuf/empty.proto";
+
+option java_outer_classname = "ProductControllerApi";
+
+message Create {
+  string id = 1 [(kalix.field).entity_key = true];
+  string name = 2;
+  string supplier = 3;
+}
+
+message Expire {
+  string id = 1;
+  bool status = 2;
+}
+
+service ProductServiceAction {
+  option (kalix.codegen) = {
+    action: {}
+  };
+
+  rpc CreateAction (Create) returns (google.protobuf.Empty) {
+    option (kalix.method).entity.key_generator = VERSION_4_UUID;
+    option (google.api.http) = {
+      post: "/products/action/create"
+      body: "*"
+    };
+  }
+
+  rpc ExpireAction (Expire) returns (domain.ProductState) {
+    option (google.api.http) = {
+      get: "/products/action/expire/{id}"
+    };
+  }
+
+}

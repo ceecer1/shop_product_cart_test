@@ -1,0 +1,20 @@
+syntax = "proto3";
+package com.example.domain;
+
+option java_outer_classname = "ProductDomain";
+
+message ProductState {
+  string id = 1;
+  string name = 2;
+  string supplier = 3;
+  bool status = 4;
+}
+
+message ProductCreated {
+  ProductState product = 1;
+}
+
+message ProductExpired {
+  string id = 1;
+  bool status = 2;
+}

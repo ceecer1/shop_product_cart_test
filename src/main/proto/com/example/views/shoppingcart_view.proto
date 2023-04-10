@@ -1,0 +1,53 @@
+syntax = "proto3";
+
+package com.example.view;
+
+option java_outer_classname = "EventsViewModel";
+
+import "com/example/domain/shoppingcart_domain.proto";
+import "com/example/api/shoppingcart_api.proto";
+import "kalix/annotations.proto";
+import "google/protobuf/any.proto";
+
+message ViewRequest {
+  string id = 1;
+}
+
+service EventsById {
+  option (kalix.codegen) = {
+    view: {}
+  };
+
+  rpc ProcessItemAdded(com.example.domain.ItemAdded) returns (com.example.api.ItemAddedView) {
+    option (kalix.method).eventing.in = {
+      event_sourced_entity: "shopping-cart"
+    };
+    option (kalix.method).view.update = {
+      table: "shopping_cart_item_added_events"
+      transform_updates: true
+    };
+  }
+
+//  rpc ProcessItemRemoved(com.example.domain.ItemRemoved) returns (com.example.api.ItemRemovedView) {
+//    option (kalix.method).eventing.in = {
+//      event_sourced_entity: "shopping-cart"
+//    };
+//    option (kalix.method).view.update = {
+//      table: "shopping_cart_item_removed_events"
+//      transform_updates: true
+//    };
+//  }
+
+  rpc IgnoreOtherEvents(google.protobuf.Any) returns (com.example.api.LineItem) {
+    option (kalix.method).eventing.in = {
+      event_sourced_entity: "shopping-cart"
+      ignore: true
+    };
+  };
+
+  rpc GetItemAddedEvent(ViewRequest) returns (stream com.example.api.ItemAddedView) {
+    option (kalix.method).view.query = {
+      query: "SELECT * FROM shopping_cart_item_added_events"
+    };
+  }
+}
