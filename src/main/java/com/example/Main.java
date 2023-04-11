@@ -1,10 +1,7 @@
 package com.example;
 
 import com.example.action.*;
-import com.example.domain.Counter;
-import com.example.domain.CounterProvider;
-import com.example.domain.ShoppingCart;
-import com.example.domain.ShoppingCartProvider;
+import com.example.domain.*;
 import com.example.view.EventsByIdView;
 import com.example.view.EventsByIdViewProvider;
 import kalix.javasdk.Kalix;
@@ -33,6 +30,7 @@ public final class Main {
     kalix.register(ShoppingCartControllerActionProvider.of(ShoppingCartControllerAction::new));
     kalix.register(WordCounterActionProvider.of(WordCounterAction::new));
     kalix.register(ProductServiceActionProvider.of(ProductServiceActionImpl::new));
+    kalix.register(ProductStateEntityProvider.of(ProductStateEntity::new));
     return kalix;
 //    return KalixFactory.withComponents(
 //            Counter::new,

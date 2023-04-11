@@ -32,6 +32,7 @@ public class ProductStateEntity extends AbstractProductStateEntity {
 
   @Override
   public Effect<ProductDomain.ProductState> expire(ProductDomain.ProductState currentState, ProductApi.ExpireProduct expireProduct) {
+    logger.info("Product entity expire : " + expireProduct.toString());
     ProductDomain.ProductExpired expiredEvent = ProductDomain.ProductExpired.newBuilder()
             .setId(expireProduct.getId()).build();
     return effects().emitEvent(expiredEvent).thenReply(r -> currentState.toBuilder().setStatus(false).build());
@@ -44,6 +45,7 @@ public class ProductStateEntity extends AbstractProductStateEntity {
             .setProduct(ProductDomain.ProductState.newBuilder()
                     .setId(createProductRequest.getId())
                     .setName(createProductRequest.getName())
+                    .setSupplier(createProductRequest.getSupplier())
                     .setStatus(true))
             .build();
     return effects().emitEvent(createdEvent).thenReply(r -> Empty.getDefaultInstance());
@@ -63,9 +65,9 @@ public class ProductStateEntity extends AbstractProductStateEntity {
     logger.info("PRODUCT CREATE EVENT HANDLER END");
 
     return ProductDomain.ProductState.newBuilder()
-            .setId(currentState.getId() != null ? currentState.getId() : productCreated.getProduct().getId())
+            .setId(productCreated.getProduct().getId())
             .setName(productCreated.getProduct().getName())
-            .setStatus(false)
+            .setStatus(true)
             .setSupplier(productCreated.getProduct().getSupplier())
             .build();
 

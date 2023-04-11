@@ -24,7 +24,7 @@ public class ProductServiceActionImpl extends AbstractProductServiceAction {
   @Override
   public Effect<Empty> createAction(ProductControllerApi.Create create) {
     CompletionStage<Done> timerRegistration = timers().startSingleTimer(
-            create.getId(), Duration.ofMinutes(1),
+            create.getId(), Duration.ofSeconds(20),
             components().productServiceActionImpl().expireAction(
                     ProductControllerApi.Expire.newBuilder().setId(create.getId()).build()));
 
@@ -42,6 +42,7 @@ public class ProductServiceActionImpl extends AbstractProductServiceAction {
 
   @Override
   public Effect<ProductDomain.ProductState> expireAction(ProductControllerApi.Expire expire) {
+    logger.info("AT Expire Action : " + expire.toString());
     return effects().forward(components().productStateEntity().expire(
             ProductApi.ExpireProduct.newBuilder().setId(expire.getId()).build()
     ));
